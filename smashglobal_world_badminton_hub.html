@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmashGlobal | Pro Badminton Hub & BWF Live Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Teko', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#00E676',
+                            cyan: '#00E5FF',
+                            gold: '#FFD700',
+                            darkBg: '#0B0F17',
+                            cardBg: '#131B2A',
+                            cardBorder: '#1E293B',
+                            accentRed: '#FF2E93'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0F17;
+            color: #F8FAFC;
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+        }
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .court-gradient {
+            background: linear-gradient(180deg, rgba(0, 230, 118, 0.15) 0%, rgba(11, 15, 23, 0.95) 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00E676;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col bg-brand-darkBg">
+
+    <!-- TOP TICKER - LIVE MATCH STATUS -->
+    <div class="bg-slate-900 border-b border-slate-800 text-xs py-2 px-4 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center space-x-6">
+        <div class="flex items-center space-x-2 text-brand-green font-bold shrink-0">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-green"></span>
+            </span>
+            <span>LIVE BWF ALL ENGLAND OPEN - SEMIFINALS</span>
+        </div>
+        <div class="h-3 w-px bg-slate-700 shrink-0"></div>
+        
+        <!-- Live Score Tickers -->
+        <div class="flex items-center space-x-6 shrink-0 text-slate-300">
+            <div class="flex items-center space-x-2 cursor-pointer hover:text-white" onclick="switchTab('live')">
+                <span class="font-semibold text-white">V. Axelsen (DEN)</span>
+                <span class="px-1.5 py-0.5 rounded bg-brand-green/20 text-brand-green font-mono font-bold">21 - 18, 19 - 21, 14 - 12</span>
+                <span class="font-semibold text-white">A. S. Ginting (INA)</span>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-1 rounded uppercase font-bold">Set 3</span>
+            </div>
+            <div class="h-3 w-px bg-slate-800 shrink-0"></div>
+            <div class="flex items-center space-x-2 cursor-pointer hover:text-white" onclick="switchTab('live')">
+                <span class="font-semibold text-white">An Se Young (KOR)</span>
+                <span class="px-1.5 py-0.5 rounded bg-brand-cyan/20 text-brand-cyan font-mono font-bold">21 - 14, 21 - 16</span>
+                <span class="text-slate-400">Tai Tzu Ying (TPE)</span>
+                <span class="text-[10px] bg-slate-700 text-slate-300 px-1 rounded uppercase">FT</span>
+            </div>
+            <div class="h-3 w-px bg-slate-800 shrink-0"></div>
+            <div class="flex items-center space-x-2 cursor-pointer hover:text-white" onclick="switchTab('live')">
+                <span class="font-semibold text-white">Liang/Wang (CHN)</span>
+                <span class="px-1.5 py-0.5 rounded bg-brand-green/20 text-brand-green font-mono font-bold">18 - 21, 15 - 11</span>
+                <span class="font-semibold text-white">Aaron/Soh (MAS)</span>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-1 rounded uppercase font-bold">Set 2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="sticky top-0 z-40 bg-brand-darkBg/90 backdrop-blur-md border-b border-brand-cardBorder px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-green to-brand-cyan flex items-center justify-center text-slate-900 shadow-lg glow-green">
+                    <i class="fa-solid fa-shuttlecock text-xl -rotate-45"></i>
+                </div>
+                <div>
+                    <span class="font-display text-3xl font-extrabold tracking-wider text-white">SMASH<span class="text-brand-green">GLOBAL</span></span>
+                    <span class="block text-[10px] uppercase font-semibold text-slate-400 tracking-widest -mt-2">Pro Badminton Network</span>
+                </div>
+            </div>
+
+            <!-- Desktop Nav Items -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-semibold">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-xl text-brand-green bg-slate-800/80 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-house text-xs"></i>
+                    <span>Home</span>
+                </button>
+                <button onclick="switchTab('live')" id="nav-live" class="nav-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt text-xs text-brand-gold"></i>
+                    <span>Live Matches</span>
+                </button>
+                <button onclick="switchTab('rankings')" id="nav-rankings" class="nav-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-trophy text-xs text-brand-cyan"></i>
+                    <span>BWF Rankings</span>
+                </button>
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-radar text-xs text-brand-green"></i>
+                    <span>Player Analytics</span>
+                </button>
+                <button onclick="switchTab('gear')" id="nav-gear" class="nav-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-table-tennis-paddle-ball text-xs"></i>
+                    <span>Gear Lab</span>
+                </button>
+                <button onclick="switchTab('tournaments')" id="nav-tournaments" class="nav-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar-days text-xs"></i>
+                    <span>Calendar</span>
+                </button>
+            </nav>
+
+            <!-- Actions -->
+            <div class="flex items-center space-x-3">
+                <button onclick="openRacketQuiz()" class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-green to-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg hover:brightness-110 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Find My Racket</span>
+                </button>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-xl bg-brand-cardBg border border-brand-cardBorder text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 space-y-2 border-t border-slate-800 mt-3">
+            <button onclick="switchTab('home')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-house text-brand-green"></i><span>Home</span>
+            </button>
+            <button onclick="switchTab('live')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-bolt text-brand-gold"></i><span>Live Matches</span>
+            </button>
+            <button onclick="switchTab('rankings')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-trophy text-brand-cyan"></i><span>BWF Rankings</span>
+            </button>
+            <button onclick="switchTab('analytics')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-chart-radar text-brand-green"></i><span>Player Analytics</span>
+            </button>
+            <button onclick="switchTab('gear')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-table-tennis-paddle-ball text-indigo-400"></i><span>Gear Selector</span>
+            </button>
+            <button onclick="switchTab('tournaments')" class="w-full text-left px-4 py-2.5 rounded-lg text-slate-200 hover:bg-slate-800 text-sm font-semibold flex items-center space-x-3">
+                <i class="fa-solid fa-calendar-days text-amber-400"></i><span>Tournaments Calendar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-8">
+
+        <!-- ================= SECTION 1: HOME TAB ================= -->
+        <section id="tab-home" class="tab-content space-y-8">
+            
+            <!-- Hero Broadcast Banner -->
+            <div class="relative rounded-3xl overflow-hidden border border-brand-cardBorder bg-brand-cardBg bg-grid-pattern p-6 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-green/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="space-y-4 max-w-2xl z-10">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-green/10 border border-brand-green/30 text-brand-green text-xs font-bold uppercase tracking-widest">
+                        <i class="fa-solid fa-fire animate-pulse"></i>
+                        <span>BWF World Tour Finals 2026</span>
+                    </div>
+                    <h1 class="text-4xl lg:text-6xl font-extrabold text-white tracking-tight leading-none font-display uppercase">
+                        DOMINATE THE COURT WITH <span class="bg-gradient-to-r from-brand-green via-brand-cyan to-white bg-clip-text text-transparent">REAL-TIME DATA</span>
+                    </h1>
+                    <p class="text-slate-400 text-sm lg:text-base leading-relaxed">
+                        Track live scores, analyze professional player biomechanics, discover racket setups, and explore deep BWF World Ranking analytics for global badminton.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('live')" class="px-6 py-3 rounded-xl bg-brand-green text-slate-950 font-bold text-sm hover:bg-emerald-400 transition flex items-center space-x-2 shadow-lg glow-green">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Watch Live Tracker</span>
+                        </button>
+                        <button onclick="switchTab('rankings')" class="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm hover:bg-slate-700 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-ranking-star text-brand-cyan"></i>
+                            <span>View BWF Rankings</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Featured Match Card Overlay -->
+                <div class="w-full lg:w-96 bg-slate-900/90 border border-slate-700/80 rounded-2xl p-5 shadow-2xl backdrop-blur-xl z-10 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold uppercase text-brand-gold flex items-center space-x-1.5">
+                            <i class="fa-solid fa-trophy"></i>
+                            <span>All England Open • Final</span>
+                        </span>
+                        <span class="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold uppercase tracking-wide">Live Now</span>
+                    </div>
+
+                    <!-- Player 1 -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇩🇰</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Viktor Axelsen</h4>
+                                <p class="text-[11px] text-slate-400">World No. 1 • MS</p>
+                            </div>
+                        </div>
+                        <div class="text-right font-mono">
+                            <span class="text-xl font-extrabold text-brand-green">21</span>
+                            <span class="text-xs text-slate-500 block">19</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800/80 my-1"></div>
+
+                    <!-- Player 2 -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇮🇩</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Anthony S. Ginting</h4>
+                                <p class="text-[11px] text-slate-400">World No. 4 • MS</p>
+                            </div>
+                        </div>
+                        <div class="text-right font-mono">
+                            <span class="text-xl font-extrabold text-slate-400">18</span>
+                            <span class="text-xs text-brand-green font-bold block">21</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                        <span class="text-slate-400"><i class="fa-solid fa-gauge-high text-brand-cyan mr-1"></i> Top Smash Speed:</span>
+                        <span class="font-bold text-brand-cyan font-mono">412 km/h (Ginting)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Stories & Highlight Videos Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main News (2 Columns) -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-newspaper text-brand-green"></i>
+                            <span>Latest Global Badminton Headlines</span>
+                        </h2>
+                        <span class="text-xs text-brand-cyan cursor-pointer hover:underline">View All News</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-brand-cardBg rounded-2xl border border-brand-cardBorder overflow-hidden hover:border-slate-600 transition group">
+                            <div class="h-44 bg-slate-800 relative overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80" alt="Badminton Action" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <span class="absolute top-3 left-3 bg-brand-green text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">Tournament News</span>
+                            </div>
+                            <div class="p-4 space-y-2">
+                                <p class="text-xs text-slate-400">2 Hours ago • BWF Media</p>
+                                <h3 class="font-bold text-base text-white group-hover:text-brand-green transition line-clamp-2">
+                                    An Se-Young Maintains Unbeaten Streak with Flawless Footwork Mechanics in All England
+                                </h3>
+                                <p class="text-xs text-slate-400 line-clamp-2">
+                                    Analyzing the Korean superstar's unique defense strategy and court coverage against high-tempo offensive players.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-brand-cardBg rounded-2xl border border-brand-cardBorder overflow-hidden hover:border-slate-600 transition group">
+                            <div class="h-44 bg-slate-800 relative overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1521537634581-0dced2efa2a3?auto=format&fit=crop&w=800&q=80" alt="Racket Technology" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <span class="absolute top-3 left-3 bg-brand-cyan text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">Tech & Gear</span>
+                            </div>
+                            <div class="p-4 space-y-2">
+                                <p class="text-xs text-slate-400">5 Hours ago • Gear Lab</p>
+                                <h3 class="font-bold text-base text-white group-hover:text-brand-cyan transition line-clamp-2">
+                                    Head-Heavy vs Head-Light: How Racket Balance Modifies Shuttle Velocity & Control
+                                </h3>
+                                <p class="text-xs text-slate-400 line-clamp-2">
+                                    A scientific breakdown of swing speeds, shaft flex resistance, and tension metrics for elite players.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fan Poll & Coaching Quick Tips -->
+                <div class="space-y-6">
+                    <!-- Fan Poll Card -->
+                    <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center space-x-2 text-brand-gold text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-square-poll-vertical text-sm"></i>
+                            <span>Global Fan Poll</span>
+                        </div>
+                        <h3 class="font-bold text-base text-white">Who will win the Men's Singles BWF World Tour Finals?</h3>
+
+                        <div id="pollOptions" class="space-y-2.5">
+                            <button onclick="votePoll(0)" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:border-brand-green text-left flex items-center justify-between text-xs font-semibold text-slate-200 transition">
+                                <span>Viktor Axelsen (DEN)</span>
+                                <span class="font-mono text-brand-green font-bold">42%</span>
+                            </button>
+                            <button onclick="votePoll(1)" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:border-brand-green text-left flex items-center justify-between text-xs font-semibold text-slate-200 transition">
+                                <span>Shi Yu Qi (CHN)</span>
+                                <span class="font-mono text-brand-green font-bold">31%</span>
+                            </button>
+                            <button onclick="votePoll(2)" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:border-brand-green text-left flex items-center justify-between text-xs font-semibold text-slate-200 transition">
+                                <span>Anthony S. Ginting (INA)</span>
+                                <span class="font-mono text-brand-green font-bold">27%</span>
+                            </button>
+                        </div>
+                        <p id="pollVotedText" class="text-[11px] text-slate-400 text-center hidden">Thank you for voting!</p>
+                    </div>
+
+                    <!-- Coaching Tip Snippet -->
+                    <div class="bg-gradient-to-br from-slate-900 to-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-brand-green uppercase tracking-wider"><i class="fa-solid fa-graduation-cap mr-1"></i> Pro Tip of the Day</span>
+                            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Footwork</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-white">Mastering the Split-Step Response Time</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Always drop your center of gravity right as your opponent makes shuttle contact. This pre-tenses your calves for explosive multi-directional movement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= SECTION 2: LIVE MATCHES TAB ================= -->
+        <section id="tab-live" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white uppercase font-display tracking-wide">Live Tournament Center</h2>
+                    <p class="text-xs text-slate-400">Real-time match scores, set breakdowns, and shot stats for ongoing tournaments.</p>
+                </div>
+                <!-- Category Filter -->
+                <div class="flex items-center space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 self-start">
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-green text-slate-950">All Matches</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Men's Singles</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Women's Singles</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Doubles</button>
+                </div>
+            </div>
+
+            <!-- Matches List Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Match Card 1 (Live) -->
+                <div class="bg-brand-cardBg border border-brand-green/40 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-lg">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold text-slate-300">Court 1 • Match 4</span>
+                        <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-xs font-bold uppercase flex items-center space-x-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+                            <span>Live Game 3</span>
+                        </span>
+                    </div>
+
+                    <!-- Competitor 1 -->
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇩🇰</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Viktor Axelsen</h4>
+                                <span class="text-[10px] text-slate-400">Yonex Astrox 100ZZ</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 font-mono">
+                            <span class="text-slate-500 text-xs">21</span>
+                            <span class="text-slate-500 text-xs">19</span>
+                            <span class="text-lg font-bold text-brand-green bg-brand-green/10 px-2 py-0.5 rounded">14</span>
+                        </div>
+                    </div>
+
+                    <!-- Competitor 2 -->
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇮🇩</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Anthony S. Ginting</h4>
+                                <span class="text-[10px] text-slate-400">Li-Ning 3D Calibar 900C</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 font-mono">
+                            <span class="text-slate-500 text-xs">18</span>
+                            <span class="text-slate-500 text-xs">21</span>
+                            <span class="text-lg font-bold text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded">12</span>
+                        </div>
+                    </div>
+
+                    <!-- Match Analytics Bar -->
+                    <div class="grid grid-cols-3 gap-2 text-center text-[11px] pt-1">
+                        <div class="bg-slate-900 p-2 rounded-lg">
+                            <span class="text-slate-500 block">Longest Rally</span>
+                            <span class="font-bold text-white font-mono">48 Shots</span>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded-lg">
+                            <span class="text-slate-500 block">Top Smash</span>
+                            <span class="font-bold text-brand-green font-mono">412 km/h</span>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded-lg">
+                            <span class="text-slate-500 block">Match Time</span>
+                            <span class="font-bold text-white font-mono">54 min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Card 2 (Upcoming) -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold text-slate-300">Court 2 • Match 6</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-xs font-semibold">Starts ~16:30 GMT</span>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇰🇷</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">An Se Young</h4>
+                                <span class="text-[10px] text-slate-400">Women's Singles</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">VS</span>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇪🇸</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Carolina Marin</h4>
+                                <span class="text-[10px] text-slate-400">Women's Singles</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">VS</span>
+                    </div>
+
+                    <button class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center justify-center space-x-2">
+                        <i class="fa-regular fa-bell"></i>
+                        <span>Set Match Reminder</span>
+                    </button>
+                </div>
+
+                <!-- Match Card 3 (Completed) -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold text-slate-300">Men's Doubles Final</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-xs font-semibold">Final Result</span>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-brand-green/30">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇨🇳</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Liang W.K. / Wang C.</h4>
+                                <span class="text-[10px] text-brand-green font-bold">Winner (2-1)</span>
+                            </div>
+                        </div>
+                        <div class="font-mono text-sm text-white font-bold">21, 18, 21</div>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800 opacity-60">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🇲🇾</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Aaron Chia / Soh W.Y.</h4>
+                                <span class="text-[10px] text-slate-400">Runner Up</span>
+                            </div>
+                        </div>
+                        <div class="font-mono text-sm text-slate-400">19, 21, 16</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: BWF RANKINGS TAB ================= -->
+        <section id="tab-rankings" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white uppercase font-display tracking-wide">BWF Official World Rankings</h2>
+                    <p class="text-xs text-slate-400">Updated weekly based on official BWF World Tour points accumulated over 52 weeks.</p>
+                </div>
+                
+                <!-- Discipline Switcher -->
+                <div class="flex items-center space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 overflow-x-auto" id="rankingCategoryBtns">
+                    <button onclick="changeRankingCategory('MS')" id="cat-MS" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950">Men's Singles</button>
+                    <button onclick="changeRankingCategory('WS')" id="cat-WS" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Women's Singles</button>
+                    <button onclick="changeRankingCategory('MD')" id="cat-MD" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Men's Doubles</button>
+                    <button onclick="changeRankingCategory('WD')" id="cat-WD" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Women's Doubles</button>
+                    <button onclick="changeRankingCategory('XD')" id="cat-XD" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Mixed Doubles</button>
+                </div>
+            </div>
+
+            <!-- Rankings Table -->
+            <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                <th class="py-4 px-6">Rank</th>
+                                <th class="py-4 px-6">Player / Nation</th>
+                                <th class="py-4 px-6">BWF Points</th>
+                                <th class="py-4 px-6">Tournaments</th>
+                                <th class="py-4 px-6">Top Win Rate</th>
+                                <th class="py-4 px-6 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingsTableBody" class="divide-y divide-slate-800/60 text-sm">
+                            <!-- Dynamically Generated Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: PLAYER ANALYTICS TAB ================= -->
+        <section id="tab-analytics" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white uppercase font-display tracking-wide">Player Performance & Shot Analytics</h2>
+                    <p class="text-xs text-slate-400">Biomechanics radar comparison, smash speed metrics, and court placement heatmaps.</p>
+                </div>
+
+                <!-- Select Player for Analysis -->
+                <div class="flex items-center space-x-3">
+                    <label class="text-xs text-slate-400 font-bold">Compare Player:</label>
+                    <select id="analyticsPlayerSelect" onchange="renderAnalyticsChart()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-green">
+                        <option value="axelsen">Viktor Axelsen (DEN)</option>
+                        <option value="ginting">Anthony S. Ginting (INA)</option>
+                        <option value="shiyuqi">Shi Yu Qi (CHN)</option>
+                        <option value="anseyoung">An Se Young (KOR)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Radar Chart Component -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-brand-green"></i>
+                        <span>Attribute Radar Comparison</span>
+                    </h3>
+                    <div class="h-64 relative flex items-center justify-center">
+                        <canvas id="playerRadarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Court Heatmap & Shot Velocity -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-bullseye text-brand-cyan"></i>
+                        <span>Smash Velocity & Court Heatmap</span>
+                    </h3>
+                    
+                    <!-- Simulated Badminton Court Heatmap -->
+                    <div class="relative w-full h-48 bg-emerald-950/40 border-2 border-emerald-500/40 rounded-xl overflow-hidden p-3 flex flex-col justify-between">
+                        <div class="border-b border-emerald-500/40 h-1/2 w-full flex justify-between">
+                            <div class="w-1/2 border-r border-emerald-500/40 relative">
+                                <!-- Hotspot Dot -->
+                                <span class="absolute top-4 left-6 w-8 h-8 rounded-full bg-red-500/40 animate-ping"></span>
+                                <span class="absolute top-6 left-8 w-4 h-4 rounded-full bg-red-500"></span>
+                            </div>
+                            <div class="w-1/2 relative">
+                                <span class="absolute bottom-2 right-6 w-6 h-6 rounded-full bg-amber-500/50"></span>
+                            </div>
+                        </div>
+                        <div class="h-1/2 w-full flex justify-between">
+                            <div class="w-1/2 border-r border-emerald-500/40"></div>
+                            <div class="w-1/2 relative">
+                                <span class="absolute top-3 left-4 w-7 h-7 rounded-full bg-red-500/40"></span>
+                            </div>
+                        </div>
+                        <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] bg-slate-900/90 text-brand-green px-2 py-0.5 rounded font-mono">NET LINE</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block">Avg Smash Speed</span>
+                            <span id="statSmashSpeed" class="text-lg font-bold text-brand-green font-mono">395 km/h</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <span class="text-slate-400 block">Net Kill Precision</span>
+                            <span id="statNetKill" class="text-lg font-bold text-brand-cyan font-mono">94%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Racket Equipment Spec Profile -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders text-brand-gold"></i>
+                        <span>Pro Equipment Breakdown</span>
+                    </h3>
+
+                    <div class="space-y-3 text-xs" id="proGearInfo">
+                        <!-- Populated Dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: GEAR LAB TAB ================= -->
+        <section id="tab-gear" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white uppercase font-display tracking-wide">Badminton Gear Lab & String Calculator</h2>
+                    <p class="text-xs text-slate-400">Discover top pro rackets, string tension formulas, and badminton shoe technology.</p>
+                </div>
+                <button onclick="openRacketQuiz()" class="px-4 py-2 rounded-xl bg-brand-green text-slate-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 transition flex items-center space-x-2 shadow-lg glow-green">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Take Racket Selector Quiz</span>
+                </button>
+            </div>
+
+            <!-- Interactive String Tension Calculator Widget -->
+            <div class="bg-gradient-to-r from-slate-900 via-brand-cardBg to-slate-900 border border-brand-cardBorder rounded-2xl p-6 space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-brand-cyan flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white">Interactive String Tension Calculator</h3>
+                        <p class="text-xs text-slate-400">Calculate ideal string tension based on experience level and play style.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="text-xs text-slate-300 font-semibold block mb-1">Player Experience Level</label>
+                        <select id="calcLevel" onchange="calculateTension()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                            <option value="beginner">Beginner (0 - 1 Year)</option>
+                            <option value="intermediate" selected>Intermediate (Club Player)</option>
+                            <option value="advanced">Advanced / Tournament Player</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-300 font-semibold block mb-1">Primary Playstyle</label>
+                        <select id="calcStyle" onchange="calculateTension()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                            <option value="power">Attacking / Power Smasher</option>
+                            <option value="control" selected>Control / Technical Net Player</option>
+                            <option value="speed">Speed / Fast Defensive Drives</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-brand-green/40 flex flex-col justify-between">
+                        <span class="text-xs text-slate-400">Recommended String Tension:</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span id="calculatedTension" class="text-3xl font-extrabold text-brand-green font-mono">25 - 27</span>
+                            <span class="text-xs text-slate-300 font-bold">lbs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Gear Showcase Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Racket 1 -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <div class="h-40 bg-slate-900/60 rounded-xl flex items-center justify-center p-4 relative">
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-6xl text-brand-green opacity-80"></i>
+                        <span class="absolute top-3 right-3 bg-brand-green/20 text-brand-green text-[10px] font-bold px-2 py-0.5 rounded">Head Heavy</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold">Yonex Astrox Series</span>
+                        <h4 class="font-bold text-base text-white">Astrox 100 ZZ</h4>
+                        <p class="text-xs text-slate-400 mt-1">Hyper-slim shaft for maximum flex recovery power in steep smashes.</p>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
+                        <span class="text-slate-400">Pro Choice:</span>
+                        <span class="font-semibold text-white">Viktor Axelsen</span>
+                    </div>
+                </div>
+
+                <!-- Racket 2 -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <div class="h-40 bg-slate-900/60 rounded-xl flex items-center justify-center p-4 relative">
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-6xl text-brand-cyan opacity-80"></i>
+                        <span class="absolute top-3 right-3 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold px-2 py-0.5 rounded">Even Balance</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold">Victor Thruster Series</span>
+                        <h4 class="font-bold text-base text-white">TK-Ryuga II</h4>
+                        <p class="text-xs text-slate-400 mt-1">Multi-layer carbon fiber engineered for aggressive counter-attack response.</p>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
+                        <span class="text-slate-400">Pro Choice:</span>
+                        <span class="font-semibold text-white">Lee Zii Jia</span>
+                    </div>
+                </div>
+
+                <!-- Racket 3 -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 space-y-4">
+                    <div class="h-40 bg-slate-900/60 rounded-xl flex items-center justify-center p-4 relative">
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-6xl text-brand-gold opacity-80"></i>
+                        <span class="absolute top-3 right-3 bg-brand-gold/20 text-brand-gold text-[10px] font-bold px-2 py-0.5 rounded">Head Light</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-bold">Li-Ning Axforce</span>
+                        <h4 class="font-bold text-base text-white">Axforce 90 Max</h4>
+                        <p class="text-xs text-slate-400 mt-1">Lightning fast swing speed designed for fast-paced doubles defense.</p>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
+                        <span class="text-slate-400">Pro Choice:</span>
+                        <span class="font-semibold text-white">Loh Kean Yew</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 6: TOURNAMENT CALENDAR TAB ================= -->
+        <section id="tab-tournaments" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white uppercase font-display tracking-wide">BWF World Tour Calendar 2026</h2>
+                    <p class="text-xs text-slate-400">Filter upcoming tournaments by BWF Super level, prize money pool, and venue locations.</p>
+                </div>
+
+                <!-- Level Filter -->
+                <div class="flex items-center space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 overflow-x-auto">
+                    <button onclick="filterTournaments('all')" class="tourn-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-green text-slate-950">All Levels</button>
+                    <button onclick="filterTournaments('1000')" class="tourn-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Super 1000</button>
+                    <button onclick="filterTournaments('750')" class="tourn-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Super 750</button>
+                    <button onclick="filterTournaments('500')" class="tourn-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white">Super 500</button>
+                </div>
+            </div>
+
+            <!-- Tournaments List -->
+            <div class="space-y-4" id="tournamentsList">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RACKET SELECTOR QUIZ MODAL -->
+    <div id="quizModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-brand-cardBg border border-brand-cardBorder rounded-3xl max-w-lg w-full p-6 space-y-6 relative shadow-2xl">
+            <button onclick="closeRacketQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-brand-green uppercase tracking-wider">Interactive Fitting Quiz</span>
+                <h3 class="text-xl font-bold text-white">Find Your Ideal Badminton Racket</h3>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1.5">1. What is your primary playing style on court?</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-green text-center text-slate-300">Hard Smasher</button>
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-green text-center text-slate-300">All-Rounder</button>
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-green text-center text-slate-300">Fast Defender</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1.5">2. Preferred Shaft Stiffness?</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-cyan text-center text-slate-300">Extra Stiff</button>
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-cyan text-center text-slate-300">Medium Flex</button>
+                        <button class="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-brand-cyan text-center text-slate-300">Flexible</button>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-brand-green/30 space-y-2">
+                    <span class="text-slate-400 text-[11px] block">Top Match Recommendation:</span>
+                    <h4 class="text-base font-bold text-brand-green">Yonex Astrox 99 Pro (4U/G5)</h4>
+                    <p class="text-[11px] text-slate-400">Perfect balance of raw smashing momentum with controlled net drop angles.</p>
+                </div>
+            </div>
+
+            <button onclick="closeRacketQuiz()" class="w-full py-3 rounded-xl bg-brand-green text-slate-950 font-bold text-xs uppercase tracking-wider hover:brightness-110">
+                Close & View Full Gear Specs
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800 text-xs text-slate-500 py-8 px-4 lg:px-8 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-green text-slate-950 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-shuttlecock -rotate-45"></i>
+                </div>
+                <span class="font-display text-xl font-bold text-white">SMASH<span class="text-brand-green">GLOBAL</span></span>
+            </div>
+            <p>© 2026 SmashGlobal Badminton Hub. Real-time BWF Analytics Platform.</p>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hover:text-white">Privacy Policy</a>
+                <a href="#" class="hover:text-white">Terms of Service</a>
+                <a href="#" class="hover:text-white">BWF API Docs</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APP SCRIPT LOGIC -->
+    <script>
+        // Mock Data Store for BWF World Rankings
+        const rankingsData = {
+            MS: [
+                { rank: 1, name: "Viktor Axelsen", country: "🇩🇰 DEN", points: "103,055", tournaments: 14, winRate: "88.4%", playerKey: "axelsen" },
+                { rank: 2, name: "Shi Yu Qi", country: "🇨🇳 CHN", points: "99,215", tournaments: 16, winRate: "82.1%", playerKey: "shiyuqi" },
+                { rank: 3, name: "Jonatan Christie", country: "🇮🇩 INA", points: "89,250", tournaments: 17, winRate: "76.5%", playerKey: "ginting" },
+                { rank: 4, name: "Anthony S. Ginting", country: "🇮🇩 INA", points: "85,140", tournaments: 15, winRate: "74.8%", playerKey: "ginting" },
+                { rank: 5, name: "Kodai Naraoka", country: "🇯🇵 JPN", points: "83,915", tournaments: 19, winRate: "71.2%", playerKey: "axelsen" }
+            ],
+            WS: [
+                { rank: 1, name: "An Se Young", country: "🇰🇷 KOR", points: "113,314", tournaments: 15, winRate: "92.5%", playerKey: "anseyoung" },
+                { rank: 2, name: "Chen Yu Fei", country: "🇨🇳 CHN", points: "102,596", tournaments: 14, winRate: "84.0%", playerKey: "anseyoung" },
+                { rank: 3, name: "Tai Tzu Ying", country: "🇹🇼 TPE", points: "97,023", tournaments: 16, winRate: "80.6%", playerKey: "anseyoung" },
+                { rank: 4, name: "Carolina Marin", country: "🇪🇸 ESP", points: "88,405", tournaments: 15, winRate: "78.2%", playerKey: "anseyoung" }
+            ],
+            MD: [
+                { rank: 1, name: "Liang Wei Keng / Wang Chang", country: "🇨🇳 CHN", points: "101,741", tournaments: 16, winRate: "81.5%", playerKey: "axelsen" },
+                { rank: 2, name: "Kang Min Hyuk / Seo Seung Jae", country: "🇰🇷 KOR", points: "97,255", tournaments: 17, winRate: "79.0%", playerKey: "axelsen" },
+                { rank: 3, name: "Satwiksairaj Rankireddy / Chirag Shetty", country: "🇮🇳 IND", points: "96,330", tournaments: 14, winRate: "78.4%", playerKey: "axelsen" }
+            ],
+            WD: [
+                { rank: 1, name: "Chen Qing Chen / Jia Yi Fan", country: "🇨🇳 CHN", points: "111,554", tournaments: 14, winRate: "89.1%", playerKey: "anseyoung" },
+                { rank: 2, name: "Baek Ha Na / Lee So Hee", country: "🇰🇷 KOR", points: "98,316", tournaments: 16, winRate: "81.0%", playerKey: "anseyoung" }
+            ],
+            XD: [
+                { rank: 1, name: "Zheng Si Wei / Huang Ya Qiong", country: "🇨🇳 CHN", points: "111,400", tournaments: 15, winRate: "90.2%", playerKey: "axelsen" },
+                { rank: 2, name: "Yuta Watanabe / Arisa Higashino", country: "🇯🇵 JPN", points: "94,205", tournaments: 16, winRate: "80.1%", playerKey: "axelsen" }
+            ]
+        };
+
+        // Player Profile Data for Analytics & Radar Charts
+        const playerProfiles = {
+            axelsen: {
+                name: "Viktor Axelsen",
+                attributes: [95, 82, 90, 88, 92], // Smash, Agility, Defense, Stamina, Net Play
+                racket: "Yonex Astrox 100ZZ (3U)",
+                string: "Yonex BG66 Ultimax (31 lbs)",
+                shoes: "Yonex Power Cushion 65 Z3",
+                smashSpeed: "419 km/h",
+                netKill: "96%"
+            },
+            ginting: {
+                name: "Anthony S. Ginting",
+                attributes: [98, 96, 78, 84, 90],
+                racket: "Li-Ning 3D Calibar 900C",
+                string: "Li-Ning No.1 (30 lbs)",
+                shoes: "Li-Ning Ranger V",
+                smashSpeed: "417 km/h",
+                netKill: "92%"
+            },
+            shiyuqi: {
+                name: "Shi Yu Qi",
+                attributes: [91, 88, 89, 90, 94],
+                racket: "Yonex Astrox 88D Pro",
+                string: "Yonex EXBOLT 65 (31 lbs)",
+                shoes: "Yonex Power Cushion 65 Z3",
+                smashSpeed: "405 km/h",
+                netKill: "94%"
+            },
+            anseyoung: {
+                name: "An Se Young",
+                attributes: [82, 95, 99, 98, 93],
+                racket: "Yonex Astrox 77 Pro",
+                string: "Yonex BG80 (28 lbs)",
+                shoes: "Yonex Eclipsion Z3",
+                smashSpeed: "372 km/h",
+                netKill: "97%"
+            }
+        };
+
+        // Tournaments Data
+        const tournamentsData = [
+            { name: "YONEX All England Open Championships 2026", level: "1000", prize: "$1,300,000", location: "Birmingham, England", date: "Mar 11 - Mar 16, 2026", status: "Ongoing" },
+            { name: "KAPAL API Indonesia Open 2026", level: "1000", prize: "$1,350,000", location: "Jakarta, Indonesia", date: "Jun 02 - Jun 07, 2026", status: "Upcoming" },
+            { name: "VICTOR China Open 2026", level: "1000", prize: "$2,000,000", location: "Changzhou, China", date: "Sep 15 - Sep 20, 2026", status: "Upcoming" },
+            { name: "PETRONAS Malaysia Open 2026", level: "1000", prize: "$1,300,000", location: "Kuala Lumpur, Malaysia", date: "Jan 06 - Jan 11, 2026", status: "Completed" },
+            { name: "DAIHATSU Japan Open 2026", level: "750", prize: "$850,000", location: "Tokyo, Japan", date: "Jul 21 - Jul 26, 2026", status: "Upcoming" },
+            { name: "PERODUA Malaysia Masters 2026", level: "500", prize: "$420,000", location: "Kuala Lumpur, Malaysia", date: "May 19 - May 24, 2026", status: "Upcoming" }
+        ];
+
+        let currentRadarChart = null;
+
+        // Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-green', 'bg-slate-800/80');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-brand-green', 'bg-slate-800/80');
+                activeBtn.classList.remove('text-slate-400');
+            }
+
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+
+            // Trigger canvas resize if switching to analytics
+            if (tabId === 'analytics') {
+                setTimeout(renderAnalyticsChart, 100);
+            }
+        }
+
+        // Render BWF Rankings Table
+        function changeRankingCategory(category) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-cyan', 'text-slate-950');
+                btn.classList.add('text-slate-400');
+            });
+            const activeCatBtn = document.getElementById(`cat-${category}`);
+            if (activeCatBtn) {
+                activeCatBtn.classList.add('bg-brand-cyan', 'text-slate-950');
+                activeCatBtn.classList.remove('text-slate-400');
+            }
+
+            const tbody = document.getElementById('rankingsTableBody');
+            const data = rankingsData[category] || [];
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-800/40 transition">
+                    <td class="py-4 px-6 font-mono font-bold ${item.rank === 1 ? 'text-brand-gold text-base' : 'text-white'}">
+                        ${item.rank === 1 ? '<i class="fa-solid fa-crown mr-1"></i> #1' : `#${item.rank}`}
+                    </td>
+                    <td class="py-4 px-6 font-semibold text-white">
+                        <div>${item.name}</div>
+                        <span class="text-xs text-slate-400 font-normal">${item.country}</span>
+                    </td>
+                    <td class="py-4 px-6 font-mono text-brand-green font-bold">${item.points}</td>
+                    <td class="py-4 px-6 text-slate-300 font-mono">${item.tournaments} Tournaments</td>
+                    <td class="py-4 px-6 text-brand-cyan font-bold font-mono">${item.winRate}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="inspectPlayer('${item.playerKey}')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">
+                            Inspect Radar
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Jump directly to Player Analytics tab from rankings table
+        function inspectPlayer(playerKey) {
+            switchTab('analytics');
+            const select = document.getElementById('analyticsPlayerSelect');
+            select.value = playerKey;
+            renderAnalyticsChart();
+        }
+
+        // Radar Chart Analytics Rendering
+        function renderAnalyticsChart() {
+            const playerKey = document.getElementById('analyticsPlayerSelect').value;
+            const profile = playerProfiles[playerKey] || playerProfiles['axelsen'];
+
+            // Update Text Data
+            document.getElementById('statSmashSpeed').textContent = profile.smashSpeed;
+            document.getElementById('statNetKill').textContent = profile.netKill;
+
+            // Update Gear Spec List
+            document.getElementById('proGearInfo').innerHTML = `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between">
+                    <span class="text-slate-400">Racket Frame:</span>
+                    <span class="font-bold text-white">${profile.racket}</span>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between">
+                    <span class="text-slate-400">String & Tension:</span>
+                    <span class="font-bold text-brand-green font-mono">${profile.string}</span>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between">
+                    <span class="text-slate-400">Footwear:</span>
+                    <span class="font-bold text-brand-cyan">${profile.shoes}</span>
+                </div>
+            `;
+
+            // Chart Rendering
+            const ctx = document.getElementById('playerRadarChart').getContext('2d');
+            if (currentRadarChart) {
+                currentRadarChart.destroy();
+            }
+
+            currentRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Smash Power', 'Agility', 'Defense', 'Stamina', 'Net Play'],
+                    datasets: [{
+                        label: profile.name,
+                        data: profile.attributes,
+                        borderColor: '#00E676',
+                        backgroundColor: 'rgba(0, 230, 118, 0.25)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#00E676'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#94A3B8', font: { size: 10 } },
+                            ticks: { display: false },
+                            min: 50,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#FFFFFF', font: { family: 'Plus Jakarta Sans' } } }
+                    }
+                }
+            });
+        }
+
+        // String Calculator Logic
+        function calculateTension() {
+            const level = document.getElementById('calcLevel').value;
+            const style = document.getElementById('calcStyle').value;
+            let tension = "24 - 26";
+
+            if (level === 'beginner') {
+                tension = "20 - 23";
+            } else if (level === 'intermediate') {
+                tension = style === 'power' ? "25 - 27" : "24 - 26";
+            } else if (level === 'advanced') {
+                tension = style === 'power' ? "29 - 32" : "27 - 30";
+            }
+
+            document.getElementById('calculatedTension').textContent = tension;
+        }
+
+        // Tournament Calendar Filtering
+        function filterTournaments(level) {
+            document.querySelectorAll('.tourn-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-green', 'text-slate-950');
+                btn.classList.add('text-slate-400');
+            });
+            event.target.classList.add('bg-brand-green', 'text-slate-950');
+            event.target.classList.remove('text-slate-400');
+
+            const filtered = level === 'all' ? tournamentsData : tournamentsData.filter(t => t.level === level);
+            renderTournamentsList(filtered);
+        }
+
+        function renderTournamentsList(list) {
+            const container = document.getElementById('tournamentsList');
+            container.innerHTML = list.map(item => `
+                <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-700 flex flex-col items-center justify-center font-bold text-brand-gold shrink-0">
+                            <span class="text-[10px] uppercase text-slate-400">BWF</span>
+                            <span class="text-xs font-mono">${item.level}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-white">${item.name}</h4>
+                            <div class="flex items-center space-x-3 text-xs text-slate-400 mt-1">
+                                <span><i class="fa-solid fa-location-dot text-brand-cyan mr-1"></i> ${item.location}</span>
+                                <span><i class="fa-solid fa-calendar mr-1"></i> ${item.date}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-slate-800 pt-3 md:pt-0">
+                        <div class="text-right">
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Prize Pool</span>
+                            <span class="font-mono font-bold text-brand-green text-sm">${item.prize}</span>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${item.status === 'Ongoing' ? 'bg-red-500/20 text-red-400 animate-pulse' : 'bg-slate-800 text-slate-300'}">
+                            ${item.status}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Fan Poll Voting
+        function votePoll(index) {
+            document.getElementById('pollOptions').classList.add('opacity-70', 'pointer-events-none');
+            document.getElementById('pollVotedText').classList.remove('hidden');
+        }
+
+        // Modal Controls
+        function openRacketQuiz() {
+            document.getElementById('quizModal').classList.remove('hidden');
+        }
+        function closeRacketQuiz() {
+            document.getElementById('quizModal').classList.add('hidden');
+        }
+
+        // Mobile Menu Drawer Toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            changeRankingCategory('MS');
+            renderTournamentsList(tournamentsData);
+        });
+    </script>
+</body>
+</html>
